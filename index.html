@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>THREAT HUNT PORTFOLIO // Joshua Fischer</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Orbitron:wght@400;700;900&family=JetBrains+Mono:wght@300;400;700&display=swap');
+
+  :root {
+    --black: #000000;
+    --bg: #050505;
+    --bg2: #0a0a0a;
+    --yellow: #FFD700;
+    --yellow-dim: #b89a00;
+    --yellow-faint: #1a1500;
+    --red: #ff3333;
+    --green: #00ff88;
+    --grey: #333333;
+    --text: #cccccc;
+    --text-dim: #666666;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 14px;
+    line-height: 1.7;
+    overflow-x: hidden;
+  }
+
+  body::before {
+    content: '';
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background: repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 2px,
+      rgba(0,0,0,0.15) 2px,
+      rgba(0,0,0,0.15) 4px
+    );
+    pointer-events: none;
+    z-index: 9999;
+  }
+
+  header {
+    border-bottom: 1px solid var(--grey);
+    padding: 40px 60px 30px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  header::after {
+    content: '';
+    position: absolute;
+    bottom: 0; left: 0;
+    width: 100%; height: 1px;
+    background: linear-gradient(90deg, transparent, var(--yellow), transparent);
+  }
+
+  .header-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    flex-wrap: wrap;
+    gap: 20px;
+  }
+
+  .classification {
+    font-family: 'Orbitron', monospace;
+    font-size: 10px;
+    color: var(--red);
+    letter-spacing: 4px;
+    border: 1px solid var(--red);
+    padding: 4px 12px;
+    display: inline-block;
+    animation: blink 2s infinite;
+  }
+
+  @keyframes blink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.4; }
+  }
+
+  .hunt-meta {
+    text-align: right;
+    font-size: 11px;
+    color: var(--text-dim);
+    letter-spacing: 1px;
+  }
+
+  .hunt-meta span {
+    color: var(--yellow);
+  }
+
+  h1 {
+    font-family: 'Orbitron', monospace;
+    font-size: clamp(28px, 5vw, 52px);
+    font-weight: 900;
+    color: var(--yellow);
+    letter-spacing: 6px;
+    margin: 24px 0 8px;
+    text-shadow: 0 0 40px rgba(255,215,0,0.3);
+  }
+
+  .subtitle {
+    font-size: 12px;
+    color: var(--text-dim);
+    letter-spacing: 3px;
+    text-transform: uppercase;
+  }
+
+  .subtitle span {
+    color: var(--yellow-dim);
+  }
+
+  .container {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 60px 40px;
+  }
+
+  .section {
+    margin-bottom: 60px;
+    opacity: 0;
+    transform: translateY(20px);
+    animation: fadeUp 0.6s ease forwards;
+  }
+
+  .section:nth-child(1) { animation-delay: 0.1s; }
+  .section:nth-child(2) { animation-delay: 0.2s; }
+
+  @keyframes fadeUp {
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .section-header {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 24px;
+  }
+
+  .phase-tag {
+    font-family: 'Orbitron', monospace;
+    font-size: 10px;
+    font-weight: 700;
+    color: var(--black);
+    background: var(--yellow);
+    padding: 4px 10px;
+    letter-spacing: 2px;
+    white-space: nowrap;
+  }
+
+  .section-title {
+    font-family: 'Orbitron', monospace;
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--yellow);
+    letter-spacing: 3px;
+    text-transform: uppercase;
+  }
+
+  .section-line {
+    flex: 1;
+    height: 1px;
+    background: linear-gradient(90deg, var(--grey), transparent);
+  }
+
+  .prose {
+    color: var(--text);
+    line-height: 1.9;
+    font-size: 13px;
+  }
+
+  .prose p { margin-bottom: 14px; }
+
+  .hl { color: var(--yellow); font-weight: 700; }
+
+  .hunt-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 1px;
+    background: var(--grey);
+    border: 1px solid var(--grey);
+  }
+
+  .hunt-card {
+    background: var(--bg);
+    padding: 24px;
+    position: relative;
+    transition: background 0.2s;
+  }
+
+  .hunt-card:hover {
+    background: var(--yellow-faint);
+  }
+
+  .hunt-card a {
+    text-decoration: none;
+    color: inherit;
+    display: block;
+  }
+
+  .hunt-status {
+    font-family: 'Orbitron', monospace;
+    font-size: 9px;
+    letter-spacing: 2px;
+    padding: 4px 10px;
+    display: inline-block;
+    margin-bottom: 12px;
+    border: 1px solid;
+    text-transform: uppercase;
+  }
+
+  .status-solved {
+    color: var(--green);
+    border-color: var(--green);
+    background: rgba(0,255,136,0.05);
+  }
+
+  .hunt-name {
+    font-family: 'Orbitron', monospace;
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--yellow);
+    letter-spacing: 3px;
+    margin-bottom: 8px;
+  }
+
+  .hunt-meta-card {
+    font-size: 12px;
+    color: var(--text-dim);
+    line-height: 1.6;
+  }
+
+  .hunt-meta-card span {
+    color: var(--yellow);
+  }
+
+  footer {
+    border-top: 1px solid var(--grey);
+    padding: 30px 60px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 16px;
+  }
+
+  footer .left {
+    font-size: 11px;
+    color: var(--text-dim);
+    letter-spacing: 1px;
+  }
+
+  footer .left span { color: var(--yellow); }
+
+  footer .right {
+    font-family: 'Orbitron', monospace;
+    font-size: 9px;
+    color: var(--text-dim);
+    letter-spacing: 2px;
+  }
+
+  @media (max-width: 700px) {
+    header { padding: 24px 20px; }
+    .container { padding: 40px 20px; }
+    footer { padding: 20px; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-top">
+    <div class="classification">⚠ SOC ANALYST PORTFOLIO</div>
+    <div class="hunt-meta">
+      ANALYST: <span>Joshua Fischer</span><br>
+      PLATFORM: <span>Microsoft Sentinel</span>
+    </div>
+  </div>
+  <h1>THREAT HUNT PORTFOLIO</h1>
+  <div class="subtitle">Proactive Threat Hunts // <span>APT Analysis</span> // SOC Investigations</div>
+</header>
+
+<div class="container">
+
+  <div class="section">
+    <div class="section-header">
+      <div class="phase-tag">HUNTS</div>
+      <div class="section-title">Available Reports</div>
+      <div class="section-line"></div>
+    </div>
+
+    <div class="hunt-grid">
+      <div class="hunt-card">
+        <a href="silent-corridor/index.html">
+          <div class="hunt-status status-solved">SOLVED</div>
+          <div class="hunt-name">SILENT CORRIDOR</div>
+          <div class="hunt-meta-card">
+            <span>DATE:</span> 09 May 2026<br>
+            <span>ACTOR:</span> GREY VEIL (Defence Sector APT)<br>
+            <span>LEVEL:</span> Advanced<br>
+            <span>RANK:</span> #2 Global Solve
+          </div>
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-header">
+      <div class="phase-tag">INFO</div>
+      <div class="section-title">About</div>
+      <div class="section-line"></div>
+    </div>
+    <div class="prose">
+      <p>Collection of proactive threat hunt reports and SOC investigations. Each report contains a full attack chain reconstruction, IoC analysis, KQL detection logic, and MITRE ATT&CK mapping.</p>
+      <p>All investigations conducted in <span class="hl">Microsoft Sentinel</span> using hypothesis-driven methodologies.</p>
+    </div>
+  </div>
+
+</div>
+
+<footer>
+  <div class="left">
+    <span>Joshua Fischer</span> // SOC Analyst Portfolio //<br>
+    github.com/Joshua-Jeremy-Fischer
+  </div>
+  <div class="right">
+    THREAT HUNT PORTFOLIO // LIVE //<br>
+    BUILT WITH GITHUB PAGES
+  </div>
+</footer>
+
+</body>
+</html>

